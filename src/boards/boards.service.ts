@@ -1,47 +1,44 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Board, BoardStatus } from './board.model';
-import { v1 as uuid } from 'uuid';
+import { BoardStatus } from './board-status.enum';
 import { CreateBoardDto } from './dto/create-board.dto';
+import { Board } from './board.entity';
 
 @Injectable()
 export class BoardsService {
-    private boards: Board[] = [];
+    constructor() {}
 
-    getAllBoards(): Board[] {
-        return this.boards;
-    }
+    async getBoardById(id: number): Promise<Board> {
+        const found = await Board.findOneBy({id});
 
-    createBoard(createBoardDto: CreateBoardDto) {
-        const {title, description} = createBoardDto;
- 
-        const board: Board = {
-            id: uuid(), //유니크한 값 주입
-            title,
-            description,
-            status: BoardStatus.PUBLIC
-        }
-
-        this.boards.push(board);
-        return board;
-    } 
-
-    getBoardById(id: string): Board {
-        const found = this.boards.find(board => board.id === id);
-
-        if(!found) {    //예외처리 추가
+        if(!found) {
             throw new NotFoundException(`Can't find Board with id ${id}`);
         }
+        console.log('found', found);
+
         return found;
     }
 
-    deleteBoard(id: string): void {
-        const found = this.getBoardById(id);
-        this.boards = this.boards.filter((board) => board.id !== found.id);
+    async createBoarad(createBoardDto: CreateBoardDto): Promise<Board> {
+
+        return await Board.createBoard(createBoardDto);
     }
 
-    updateBoardStatus(id: string, status: BoardStatus): Board {
-        const board = this.getBoardById(id);
+    async deleteBoard(id: number): Promise<void> {
+        const result = await Board.delete(id);
+        
+        console.log('result', result);
+    } 
+
+    async updateBoardStatus(id: number, status: BoardStatus): Promise<Board> {
+        const board = await this.getBoardById(id);
+
         board.status = status;
+        await Board.save(board);
+
         return board;
+    }
+
+    async getAllBoard(): Promise<Board[]> {
+        return Board.find();
     }
 }
