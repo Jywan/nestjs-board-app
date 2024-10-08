@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { AuthCredentialsDto } from "./dto/auth-credential.dto";
+import { AuthCredentialsDto } from "./dto/auth-credential";
 
 @Entity()
 export class User extends BaseEntity {
