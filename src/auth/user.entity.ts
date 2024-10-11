@@ -1,5 +1,6 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { AuthCredentialsDto } from "./dto/auth-credential";
+import { Board } from "src/boards/board.entity";
 
 @Entity()
 @Unique(['username'])
@@ -14,4 +15,6 @@ export class User extends BaseEntity {
     @Column()
     password: string;
 
+    @OneToMany(type => Board, board => board.user, { eager: true })
+    boards: Board[]
 }
