@@ -29,10 +29,14 @@ export class BoardsService {
         return await Board.createBoard(createBoardDto, user);
     }
 
-    async deleteBoard(id: number): Promise<void> {
-        const result = await Board.delete(id);
+    async deleteBoard(id: number, user: User): Promise<void> {
+        const result = await Board.delete( { id, user } );
         
-        console.log('result', result);
+        if(result.affected === 0) {
+            throw new NotFoundException(`Can't find Baord with id ${id}`);
+        } else {
+            console.log('result', result);
+        }
     } 
 
     async updateBoardStatus(id: number, status: BoardStatus): Promise<Board> {
